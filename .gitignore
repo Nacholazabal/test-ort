@@ -1,0 +1,7 @@
+build/
+cobertura/
+*.o
+*.exe
+*.gcda
+*.gcno
+*.gcov

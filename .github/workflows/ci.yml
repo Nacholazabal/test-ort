@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  formato:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar clang-format
+        run: pip install clang-format==19.1.1
+
+      - name: Verificar formato
+        run: clang-format --dry-run --Werror src/*.c include/*.h test/*.c
+
+  analisis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Cppcheck
+        run: sudo apt-get update && sudo apt-get install -y cppcheck
+
+      - name: Compilar con advertencias
+        run: |
+          gcc -c -Wall -Wextra -Werror -Iinclude src/led.c -o led.o
+          gcc -c -Wall -Wextra -Werror -Iinclude src/potenciometro.c -o potenciometro.o
+
+      - name: Cppcheck
+        run: cppcheck --enable=warning,style --error-exitcode=1 -I include src
+
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compilar las pruebas
+        run: |
+          mkdir -p build
+          gcc --coverage -Wall -Wextra -Werror -Iinclude -Isrc -Itest/unity test/test_led.c test/unity/unity.c -o build/test_led
+          gcc --coverage -Wall -Wextra -Werror -Iinclude -Isrc -Itest/unity test/test_potenciometro.c test/unity/unity.c -o build/test_potenciometro
+
+      - name: Correr las pruebas
+        run: |
+          ./build/test_led
+          ./build/test_potenciometro
+
+      - name: Reporte de cobertura
+        run: |
+          pip install gcovr
+          mkdir -p cobertura
+          gcovr --root . --filter src/ --html-details cobertura/index.html --txt
+
+      - name: Guardar el reporte
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura
+          path: cobertura/

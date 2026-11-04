@@ -55,11 +55,21 @@ void test_prender_escribe_encendido(void) {
     TEST_ASSERT_TRUE(ultimo_encendido);
 }
 
+void test_apagar_escribe_apagado(void) {
+    led_t *led = led_instancia();
+    led_init(led);
+
+    TEST_ASSERT_EQUAL(LED_OK, led_apagar(led));
+    TEST_ASSERT_EQUAL_UINT32(1, llamadas_write);
+    TEST_ASSERT_FALSE(ultimo_encendido);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_init_con_null_devuelve_error_de_parametro);
     RUN_TEST(test_toggle_sin_init_no_toca_el_port);
     RUN_TEST(test_toggle_llama_una_vez_al_port);
     RUN_TEST(test_prender_escribe_encendido);
+    RUN_TEST(test_apagar_escribe_apagado);
     return UNITY_END();
 }

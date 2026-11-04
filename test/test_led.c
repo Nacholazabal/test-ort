@@ -61,7 +61,7 @@ void test_apagar_escribe_apagado(void) {
 
     TEST_ASSERT_EQUAL(LED_OK, led_apagar(led));
     TEST_ASSERT_EQUAL_UINT32(1, llamadas_write);
-    TEST_ASSERT_TRUE(ultimo_encendido);
+    TEST_ASSERT_FALSE(ultimo_encendido);
 }
 
 int main(void) {

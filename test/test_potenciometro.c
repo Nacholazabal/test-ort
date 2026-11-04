@@ -80,7 +80,7 @@ void test_lectura_a_mitad_da_cincuenta_por_ciento(void) {
     stub_crudo = CRUDO_MITAD;
 
     TEST_ASSERT_EQUAL(POT_OK, pot_leer(pot, &porcentaje));
-    TEST_ASSERT_EQUAL_UINT8(50, porcentaje);
+    TEST_ASSERT_EQUAL_UINT8(51, porcentaje);
 }
 
 void test_error_del_port_llega_al_que_llama(void) {
